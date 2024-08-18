@@ -1,0 +1,7 @@
+{
+  "name": "Powerimo",
+  "short_name": "Powerimo",
+  "description": "Open source software developers tools",
+  "start_url": ".",
+  "display": "standalone"
+}
