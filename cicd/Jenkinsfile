@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         // Переменные окружения
+        NSS_API_KEY = credentials('tocl-nss-api-key')
         imagename = "tmp02"
         GIT_COMMIT_SHORT = "${env.GIT_COMMIT.take(7)}"
     }
@@ -86,6 +87,7 @@ pipeline {
 
     post {
         always {
+            nssSendJobResult(recipients: "AndewilEventsChannel")
             // Действия, которые выполняются всегда, например, уведомления
             mail to: 'app@andewil.com',
                     subject: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_STATUS})",
