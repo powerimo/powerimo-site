@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Переменные окружения
-        DOCKER_REPO = credentials('docker-repo')
+        DOCKER_REPO = "${env.DOCKER_REPO_PREFIX}"
         NSS_API_KEY = credentials('tocl-nss-api-key')
         imagename = "${env.DOCKER_REPO}/powerimo/site"
         GIT_COMMIT_SHORT = "${env.GIT_COMMIT.take(7)}"
@@ -57,6 +57,7 @@ pipeline {
             }
             steps {
                 script {
+                    echo "DOCKER_REPO=${DOCKER_REPO}"
                     def tag = "${env.BRANCH_NAME == 'main' ? 'latest' : env.BRANCH_NAME}-${GIT_COMMIT_SHORT}"
                     def dockerImage = "$imagename:$tag"
                     sh "docker build -t ${dockerImage} ."
