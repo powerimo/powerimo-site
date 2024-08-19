@@ -55,7 +55,7 @@ pipeline {
                 script {
                     def tag = "${env.BRANCH_NAME == 'main' ? 'latest' : env.BRANCH_NAME}-${GIT_COMMIT_SHORT}"
                     def dockerImage = "$imagename:$tag"
-                    sh "docker build -t ${dockerImage} ./cicd"
+                    sh "docker build -t ${dockerImage} ."
                     sh "docker push ${dockerImage}"
                 }
             }
