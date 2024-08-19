@@ -75,7 +75,7 @@ pipeline {
                     sh "echo 'Deploying to production environment'"
                     echo "HOST_PROD=${env.HOST_PROD}"
                     withCredentials([sshUserPrivateKey(credentialsId: 'deployagent', keyFileVariable: 'SSH_I', passphraseVariable: '', usernameVariable: 'SSH_USER_NAME')]) {
-                        sh 'scp -o StrictHostKeyChecking=no -P $SSH_PORT -i $SSH_I scripts/deploy.sh $SSH_USER_NAME@${HOST_PROD}:~/bin/deploy-powerimo-site-prod.sh'
+                        sh 'scp -o StrictHostKeyChecking=no -P $SSH_PORT -i $SSH_I cicd/scripts/deploy.sh $SSH_USER_NAME@${HOST_PROD}:~/bin/deploy-powerimo-site-prod.sh'
                         sh 'ssh -o StrictHostKeyChecking=no -p $SSH_PORT -i $SSH_I $SSH_USER_NAME@${HOST_PROD} "chmod +x ~/bin/deploy-powerimo-site-prod.sh"'
                         sh 'ssh -o StrictHostKeyChecking=no -p $SSH_PORT -i $SSH_I $SSH_USER_NAME@${HOST_PROD} "~/bin/deploy-powerimo-site-prod.sh PROD"'
                     }
