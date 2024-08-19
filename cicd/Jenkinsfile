@@ -7,6 +7,8 @@ pipeline {
         NSS_API_KEY = credentials('tocl-nss-api-key')
         imagename = "${env.DOCKER_REPO}/powerimo/site"
         GIT_COMMIT_SHORT = "${env.GIT_COMMIT.take(7)}"
+        SSH_PORT = "${SSH_DEFAULT_PORT}"
+        HOST_PROD = "${POWERIMO_HOST_PROD}"
     }
 
     tools {
@@ -19,6 +21,7 @@ pipeline {
             steps {
                 // Проверка исходного кода из текущей ветки
                 checkout scm
+                echo "SSH_PORT=${env.SSH_PORT}"
             }
         }
 
@@ -68,8 +71,13 @@ pipeline {
             }
             steps {
                 script {
-                    // Логика деплоя для основной ветки (например, в production)
                     sh "echo 'Deploying to production environment'"
+                    echo "HOST_PROD=${env.HOST_PROD}"
+                    withCredentials([sshUserPrivateKey(credentialsId: 'deployagent', keyFileVariable: 'SSH_I', passphraseVariable: '', usernameVariable: 'SSH_USER_NAME')]) {
+                        sh 'scp -o StrictHostKeyChecking=no -P $SSH_PORT -i $SSH_I scripts/deploy.sh $SSH_USER_NAME@${HOST_PROD}:~/bin/deploy-powerimo-site-prod.sh'
+                        sh 'ssh -o StrictHostKeyChecking=no -p $SSH_PORT -i $SSH_I $SSH_USER_NAME@${HOST_PROD} "chmod +x ~/bin/deploy-powerimo-site-prod.sh"'
+                        sh 'ssh -o StrictHostKeyChecking=no -p $SSH_PORT -i $SSH_I $SSH_USER_NAME@${HOST_PROD} "~/bin/deploy-powerimo-site-prod.sh PROD"'
+                    }
                 }
             }
         }
@@ -90,10 +98,6 @@ pipeline {
     post {
         always {
             nssSendJobResult(recipients: "AndewilEventsChannel")
-            // Действия, которые выполняются всегда, например, уведомления
-            mail to: 'app@andewil.com',
-                    subject: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_STATUS})",
-                    body: "Check the build results at ${env.BUILD_URL}"
         }
         success {
             echo 'Build succeeded!'
