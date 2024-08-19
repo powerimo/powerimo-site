@@ -1,0 +1,103 @@
+pipeline {
+    agent any
+
+    environment {
+        // Переменные окружения
+        NSS_API_KEY = credentials('tocl-nss-api-key')
+        imagename = "tmp02"
+        GIT_COMMIT_SHORT = "${env.GIT_COMMIT.take(7)}"
+    }
+
+    tools {
+        // Инструменты, которые нужны для сборки
+        nodejs 'node20'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Проверка исходного кода из текущей ветки
+                checkout scm
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                // Установка зависимостей
+                sh 'npm install'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Сборка проекта
+                sh 'npm run build'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // Запуск тестов
+                sh 'npm test'
+            }
+        }
+
+        stage('Docker Build and Push') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'develop'
+                    branch pattern: "release/.*", comparator: "REGEXP"
+                }
+            }
+            steps {
+                script {
+                    def tag = "${env.BRANCH_NAME == 'main' ? 'latest' : env.BRANCH_NAME}-${GIT_COMMIT_SHORT}"
+                    def dockerImage = "$imagename:$tag"
+                    sh "docker build -t ${dockerImage} ."
+                    sh "docker push ${dockerImage}"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    // Логика деплоя для основной ветки (например, в production)
+                    sh "echo 'Deploying to production environment'"
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                script {
+                    // Логика деплоя для ветки develop (например, в staging)
+                    sh "echo 'Deploying to staging environment'"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            nssSendJobResult(recipients: "AndewilEventsChannel")
+            // Действия, которые выполняются всегда, например, уведомления
+            mail to: 'app@andewil.com',
+                    subject: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_STATUS})",
+                    body: "Check the build results at ${env.BUILD_URL}"
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
+}
