@@ -10,7 +10,8 @@ elif [ "$ENVIRONMENT" == "PROD" ]; then
     # PROD deployment steps
     DC_NAME="powerimo-site-prod"
 
-    source ../config/powerimo-site-vars-prod
+    # shellcheck disable=SC1090
+    source ~/config/powerimo-site-vars-prod
 
     docker stop ${DC_NAME} > /dev/null
     docker container rm ${DC_NAME}
