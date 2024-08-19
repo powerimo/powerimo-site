@@ -11,7 +11,7 @@ export default function NotFound() {
                 </h2>
                 <Separator className='my-10'/>
                 <h1 className='scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-8'>
-                    We're sorry<br/>
+                    We&apos;re sorry<br/>
                     Page you requested not found
                 </h1>
                 <Link className={buttonVariants({ variant: 'secondary' })} href='/'>Return Home</Link>
