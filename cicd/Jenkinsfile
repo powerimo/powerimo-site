@@ -3,8 +3,9 @@ pipeline {
 
     environment {
         // Переменные окружения
+        DOCKER_REPO = credentials('docker-repo')
         NSS_API_KEY = credentials('tocl-nss-api-key')
-        imagename = "tmp02"
+        imagename = "${env.DOCKER_REPO}/powerimo/site"
         GIT_COMMIT_SHORT = "${env.GIT_COMMIT.take(7)}"
     }
 
