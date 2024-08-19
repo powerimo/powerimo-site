@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Переменные окружения
-        imagename = "tmp01"
+        imagename = "tmp02"
         GIT_COMMIT_SHORT = "${env.GIT_COMMIT.take(7)}"
     }
 
