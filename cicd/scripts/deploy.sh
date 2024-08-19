@@ -14,7 +14,7 @@ elif [ "$ENVIRONMENT" == "PROD" ]; then
     source ~/config/powerimo-site-vars-prod
 
     docker stop ${DC_NAME} > /dev/null
-    docker container rm ${DC_NAME}
+    docker container rm ${DC_NAME} > /dev/null
     # shellcheck disable=SC2153
     docker pull "${DI_NAME}"
 
