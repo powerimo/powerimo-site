@@ -101,6 +101,7 @@ pipeline {
 
     post {
         always {
+            // send notifications by NSS
             nssSendJobResult(recipients: "AndewilEventsChannel")
         }
         success {
