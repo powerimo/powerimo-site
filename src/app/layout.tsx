@@ -1,18 +1,21 @@
-import { Layout } from '@/components/layout';
+import { LocaleProvider } from '@/components/locale-provider';
 import { ThemeProvider } from '@/components/theme-provider';
-import { cn } from '@/lib/utils'
+import { Layout } from '@/components/layout';
+import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
-import { Inter as FontSans } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
 
-const fontSans = FontSans({
-    subsets: [ 'latin' ],
-    variable: '--font-sans',
-})
+const inter = Inter({
+    subsets: ['latin', 'cyrillic'],
+    variable: '--font-inter',
+    display: 'swap',
+});
 
 export const metadata: Metadata = {
     title: 'Powerimo',
-    description: 'Open source project',
+    description: 'Empowering Developers with Open Source Excellence',
+    keywords: 'Open Source',
 };
 
 export default function RootLayout({
@@ -21,25 +24,20 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang='en'>
-        <head/>
-        <body
-            className={cn(
-                'min-h-screen bg-background font-sans antialiased',
-                fontSans.variable,
-            )}
-        >
-        <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-        >
-            <Layout>
-                {children}
-            </Layout>
-        </ThemeProvider>
-        </body>
+        <html lang='en' className={inter.variable} suppressHydrationWarning>
+            <head />
+            <body>
+                <LocaleProvider>
+                    <ThemeProvider
+                        attribute='class'
+                        defaultTheme='system'
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        <Layout>{children}</Layout>
+                    </ThemeProvider>
+                </LocaleProvider>
+            </body>
         </html>
     );
 }

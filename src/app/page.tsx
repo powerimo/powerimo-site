@@ -1,9 +1,14 @@
-import Home from '@/content/home.mdx';
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useLocale } from '@/components/locale-provider';
+import { useEffect } from 'react';
 
 export default function Page() {
-    return (
-        <div className='m-auto prose prose-slate lg:prose-xl dark:prose-invert'>
-            <Home/>
-        </div>
-    );
+    const { locale } = useLocale();
+    const router = useRouter();
+
+    useEffect(() => router.push(`/${locale}`), [router, locale]);
+
+    return <>Loading, please wait</>;
 }
