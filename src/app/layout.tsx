@@ -1,7 +1,6 @@
 import { LocaleProvider } from '@/components/locale-provider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Layout } from '@/components/layout';
-import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -24,7 +23,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang='en' className={inter.variable} suppressHydrationWarning>
+        <html
+            lang='en'
+            className={inter.variable}
+            suppressHydrationWarning
+        >
             <head />
             <body>
                 <LocaleProvider>
