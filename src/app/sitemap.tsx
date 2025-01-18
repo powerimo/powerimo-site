@@ -7,10 +7,10 @@ const { locales } = i18n;
 const baseUrl = process.env.BASE_URL || 'https://powerimo.org';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const entries = locales.map((locale) => ({
+    const entries: MetadataRoute.Sitemap = locales.map((locale) => ({
         url: `${baseUrl}/${locale.code}`,
         lastModified: new Date().toISOString(),
-        changeFrequency: 'weekly' as const,
+        changeFrequency: 'weekly',
         priority: 0.8,
         alternates: {
             languages: {
@@ -26,7 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entries.push({
         url: baseUrl,
         lastModified: new Date().toISOString(),
-        changeFrequency: 'weekly' as const,
+        changeFrequency: 'weekly',
         priority: 1,
         alternates: {
             languages: {
