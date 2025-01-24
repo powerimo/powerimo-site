@@ -10,21 +10,8 @@ import { useRouter } from 'next/navigation';
 
 export function Header() {
     const { theme, setTheme } = useTheme();
-    const { locale, setLocale } = useLocale();
+    const { locale } = useLocale();
     const router = useRouter();
-
-    const switchTheme = () => {
-        if (theme === 'dark') {
-            setTheme('light');
-        } else {
-            setTheme('dark');
-        }
-    };
-
-    const switchLocale = (locale: string) => {
-        setLocale(locale);
-        router.push(`/${locale}`);
-    };
 
     return (
         <header className='sticky top-0 flex h-16 gap-4 bg-background'>
@@ -32,11 +19,10 @@ export function Header() {
                 <div className='flex items-center gap-4 ml-auto md:gap-2 lg:gap-4'>
                     <Select
                         value={locale}
-                        onValueChange={switchLocale}
-                        
+                        onValueChange={(locale) => router.replace(`/${locale}`)}
                     >
                         <SelectTrigger className='w-full'>
-                            <SelectValue placeholder='Select a language' />
+                            <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                             {i18n.locales.map((locale) => (
@@ -52,12 +38,11 @@ export function Header() {
                     <Button
                         variant='ghost'
                         size='icon'
-                        onClick={switchTheme}
+                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                         className=''
                     >
                         <Sun className='h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0' />
                         <Moon className='absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100' />
-                        <span className='sr-only'>Toggle theme</span>
                     </Button>
                 </div>
             </div>

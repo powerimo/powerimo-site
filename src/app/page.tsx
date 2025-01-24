@@ -8,7 +8,10 @@ export default function Page() {
     const { locale } = useLocale();
     const router = useRouter();
 
-    useEffect(() => router.push(`/${locale}`), [router, locale]);
+    useEffect(() => {
+        if (!!locale)
+            router.replace(`/${locale}`);
+    }, [locale, router]);
 
-    return <>Loading, please wait</>;
+    return <div>Please wait...</div>;
 }

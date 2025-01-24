@@ -1,32 +1,43 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { i18n } from '../i18n-config';
 
 export const LocaleContext = createContext<{ locale: string; setLocale: (locale: string) => void }>({
-    locale: i18n.defaultLocale,
+    locale: '',
     setLocale: () => {},
 });
 
 export const LocaleProvider = ({ children }: { children: React.ReactNode }) => {
-    const [locale, setLocale] = useState<string>(i18n.defaultLocale);
+    const pathname = usePathname();
 
-    useEffect(() => {
-        const storedLocale = localStorage.getItem('locale');
-        const browserLocale = navigator.language.split('-')[0];
-        const currentLocale =
-            storedLocale ||
-            (i18n.locales.map((l) => l.code).includes(browserLocale) ? browserLocale : i18n.defaultLocale);
+    const [locale, setLocalState] = useState<string>('');
 
-        setLocale(currentLocale);
+    const setLocale = useCallback((newLocale: string) => {
+        setLocalState(newLocale);
+        localStorage.setItem('locale', newLocale);
     }, []);
 
     useEffect(() => {
-        if (!locale) return;
+        const isLocaleValid = (locale: string | null | undefined): boolean =>
+            !!locale && i18n.locales.some((l) => l.code === locale);
 
-        const storedLocale = localStorage.getItem('locale');
-        if (storedLocale !== locale) localStorage.setItem('locale', locale);
-    }, [locale]);
+        const getLocale = (): string => {
+            const pathLocale = pathname?.split('/')[1];
+            if (isLocaleValid(pathLocale)) return pathLocale;
+
+            const storedLocale = localStorage.getItem('locale');
+            if (isLocaleValid(storedLocale)) return storedLocale!;
+
+            const browserLocale = navigator.language.split('-')[0];
+            if (isLocaleValid(browserLocale)) return browserLocale;
+
+            return i18n.defaultLocale;
+        };
+
+        setLocale(getLocale());
+    }, [pathname, setLocale]);
 
     return <LocaleContext.Provider value={{ locale, setLocale }}>{children}</LocaleContext.Provider>;
 };
